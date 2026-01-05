@@ -15,7 +15,7 @@ namespace Settings {
     // General (INI)
     // ------------------------------
     struct GeneralSettings {
-        int  BlurType                  = 2;  // 0=None, 1=Advanced, 2=Simple
+        int  BlurType                  = 2;  // 0=None, 1 = Simple, 2 = Advanced
 		bool ExtraChecks               = true;
 		bool VerboseLogging            = false;
     };
@@ -57,3 +57,4 @@ namespace Settings {
         void Reset();
     }
 }
+

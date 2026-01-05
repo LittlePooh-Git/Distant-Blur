@@ -1,13 +1,5 @@
 #### YOU NEED CMAKE < 3.5 !
 
-#### PROJECT FORMAT GUIDE
-/Settings
-    Settings.h/.cpp        // high-level model, in-memory representation, NotifySettingsChanged()
-    SettingsIO.h/.cpp      // load/save JSON, preserve metadata, atomic writes
-    SettingsAutosave.h/.cpp// background save queue/worker + debouncing
-    Presets.h/.cpp         // preset management (list, load, save)
-    History.h/.cpp         // optional snapshot history manager
-
 #### WINDOWS ENVIRONMENT VARIABLES TO SET
 
 1. **`COMMONLIB_SSE_FOLDER`**: The path to your clone of Commonlib.
@@ -32,3 +24,4 @@
 Automatically imports:
 - [CLibUtil](https://github.com/powerof3/CLibUtil) by powerof3
 - [SKSE Menu Framework](https://www.nexusmods.com/skyrimspecialedition/mods/120352) by Thiago099
+

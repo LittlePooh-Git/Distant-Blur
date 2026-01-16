@@ -70,6 +70,7 @@ add_commonlibsse_plugin(
     AUTHOR AUTHOR_NAME
     SOURCES ${headers} ${sources}
 )
+
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_23) # <--- use C++23 standard
 target_precompile_headers(${PROJECT_NAME} PRIVATE include/PCH.h) # <--- PCH.h is required!
 target_include_directories(

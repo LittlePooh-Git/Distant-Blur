@@ -57,106 +57,55 @@ namespace Hooks {
     void BlurManager::OnPlayerUpdate(float a_delta) {
         if (!_imod) return;
 
-        int currentMode = Settings::general.BlurType;
-        // 0 = None, 1 = Simple, 2 = Advanced
-        
-        switch (currentMode) {
-        // ========================================================
-        // MODE: NONE (Disable Blur)
-        // ========================================================
-            case 0: 
-            {
-                if (_currentTargetStrength != 0.0f) {
-                    _currentTargetStrength  = 0.0f;
-                    _currentTargetRange     = 0.0f;
-                    _useStaticTransition    = false; // Fade out nicely
-                    Logger::trace("Mode is None: Removing blur.");
-                }
-                break;
-            }
-            
+        // 0 = None, 1 = Advanced
+        if (!Settings::general.BlurType) {
             // ========================================================
-            // MODE: SIMPLE - I'm contemplating whether this is necessary or not.
+            // MODE: NONE (Disable Blur)
             // ========================================================
-            case 1: 
-            {
-                auto player = RE::PlayerCharacter::GetSingleton();
-                auto cell   = player ? player->GetParentCell() : nullptr;
-                
-                if (!cell) break;
-            
-                bool isInterior = cell->IsInteriorCell();
-            
-                if (isInterior != _lastCellWasInterior || _settingsDirty) {
-                    auto& simple         = Settings::simple;
-                    _lastCellWasInterior = isInterior;
-                    _useStaticTransition = !simple.blurSmoothing; 
-            
-                    if (isInterior) {
-                        if (simple.interiorBlurToggle) {
-                            _currentTargetStrength = simple.interiorBlurStrength;
-                            _currentTargetRange    = simple.interiorBlurRange * 10.0f; // Scale correction
-                            Logger::trace("Simple Mode (Interior): Applied Str {}, Rng {}", _currentTargetStrength, _currentTargetRange);
-                        } else {
-                            _currentTargetStrength = 0.0f;
-                            _currentTargetRange    = 0.0f;
-                            Logger::trace("Simple Mode (Interior): Blur Disabled via toggle");
-                        }
-                    } else { // Exterior
-                        if (simple.exteriorBlurToggle) {
-                            _currentTargetStrength = simple.exteriorBlurStrength;
-                            _currentTargetRange    = simple.exteriorBlurRange * 10.0f;
-                            Logger::trace("Simple Mode (Exterior): Applied Str {}, Rng {}", _currentTargetStrength, _currentTargetRange);
-                        } else {
-                            _currentTargetStrength = 0.0f;
-                            _currentTargetRange    = 0.0f;
-                            Logger::trace("Simple Mode (Exterior): Blur Disabled via toggle");
-                        }
-                    }
-                }
-                break;
+            if (_currentTargetStrength != 0.0f) {
+                _currentTargetStrength  = 0.0f;
+                _currentTargetRange     = 0.0f;
+                _useStaticTransition    = false; // Fade out nicely
+                Logger::trace("Mode is None: Removing blur.");
             }
-            
+        } else {
             // ========================================================
             // MODE: ADVANCED (Weather Table)
             // ========================================================
-            case 2: 
-            {
-                auto newWeather       = RE::Sky::GetSingleton()->currentWeather;
-                bool isWeatherChanged = (newWeather != _currentWeather || _settingsDirty);
-            
-                if (isWeatherChanged) {
-                    _currentWeather   = newWeather;
-                    auto  weatherID   = Utils::GetCurrentWeather(); // I might have to tweak this function later so I can use it for both "newWeather" above and prevWeatherID below.
-                    auto& settings    = MCP::Advanced::g_advancedWeatherData.settings;
-                    auto  it          = std::find_if(settings.begin(), settings.end(), [&](const auto& setting) {
-                        return setting.rowToggle && setting.rowWeatherType == weatherID;
+            auto newWeather       = RE::Sky::GetSingleton()->currentWeather;
+            bool isWeatherChanged = (newWeather != _currentWeather || _settingsDirty);
+        
+            if (isWeatherChanged) {
+                _currentWeather   = newWeather;
+                auto  weatherID   = Utils::GetCurrentWeather(); // I might have to tweak this function later so I can use it for both "newWeather" above and prevWeatherID below.
+                auto& settings    = MCP::Advanced::g_advancedWeatherData.settings;
+                auto  it          = std::find_if(settings.begin(), settings.end(), [&](const auto& setting) {
+                    return setting.rowToggle && setting.rowWeatherType == weatherID;
+                });
+        
+                if (it != settings.end()) {
+                    Logger::trace("Advanced Mode: Weather changed to '{}', applying blur.", weatherID);
+                    _currentTargetStrength = it->rowBlurStrength;
+                    _currentTargetRange    = it->rowBlurRange * 10;
+                    _useStaticTransition   = it->rowStaticToggle;
+                } else {
+                    Logger::trace("Advanced Mode: Weather changed to '{}', removing blur.", weatherID);
+                    _currentTargetStrength = 0.0f;
+                    _currentTargetRange    = 0.0f;
+        
+                    // Check PREVIOUS weather to decide how we transition OUT
+					// There's probably a cleaner way to do this but for now this works.
+                    auto prevWeatherID = Utils::GetPreviousWeather();
+                    auto it_old        = std::find_if(settings.begin(), settings.end(), [&](const auto& setting) {
+                        return setting.rowToggle && setting.rowWeatherType == prevWeatherID;
                     });
-            
-                    if (it != settings.end()) {
-                        Logger::trace("Advanced Mode: Weather changed to '{}', applying blur.", weatherID);
-                        _currentTargetStrength = it->rowBlurStrength;
-                        _currentTargetRange    = it->rowBlurRange * 10;
-                        _useStaticTransition   = it->rowStaticToggle;
+        
+                    if (it_old != settings.end()) {
+                        _useStaticTransition = it_old->rowStaticToggle;
                     } else {
-                        Logger::trace("Advanced Mode: Weather changed to '{}', removing blur.", weatherID);
-                        _currentTargetStrength = 0.0f;
-                        _currentTargetRange    = 0.0f;
-            
-                        // Check PREVIOUS weather to decide how we transition OUT
-                        auto prevWeatherID = Utils::GetPreviousWeather();
-                        auto it_old        = std::find_if(settings.begin(), settings.end(), [&](const auto& setting) {
-                            return setting.rowToggle && setting.rowWeatherType == prevWeatherID;
-                        });
-            
-                        if (it_old != settings.end()) {
-                            _useStaticTransition = it_old->rowStaticToggle;
-                        } else {
-                            _useStaticTransition = false; // Default to smooth fade out
-                        }
+                        _useStaticTransition = false; // Default to smooth fade out
                     }
                 }
-                break;
             }
         }
 

@@ -25,9 +25,6 @@ SKSEPluginLoad(const SKSE::LoadInterface* skse) {
     SKSE::Init(skse);
     Logger::trace("Plugin registered to SKSE");
 
-    //auto version = REL::Module::get().version();
-    //Logger::info("Plugin version: {}.{}.{}.{}", version.major, version.minor, version.build, version.revision);
-
     const auto messaging = SKSE::GetMessagingInterface();
     if (!messaging) {
         Logger::critical("Failed to acquire SKSE Messaging interface. Plugin cannot continue.");

@@ -58,16 +58,6 @@ namespace Settings {
 			general.ExtraChecks             = ini.GetBoolValue(L"General", L"ExtraChecks", general.ExtraChecks);
 			general.VerboseLogging          = ini.GetBoolValue(L"General", L"VerboseLogging", general.VerboseLogging);
 
-            simple.blurSmoothing            = ini.GetBoolValue(L"Simple", L"BlurSmoothing", simple.blurSmoothing);
-            
-            simple.interiorBlurToggle       = ini.GetBoolValue(L"Simple", L"InteriorBlurToggle", simple.interiorBlurToggle);
-            simple.interiorBlurStrength     = static_cast<float>(ini.GetDoubleValue(L"Simple", L"InteriorBlurStrength", simple.interiorBlurStrength));
-            simple.interiorBlurRange        = static_cast<float>(ini.GetDoubleValue(L"Simple", L"InteriorBlurRange", simple.interiorBlurRange));
-
-            simple.exteriorBlurToggle       = ini.GetBoolValue(L"Simple", L"ExteriorBlurToggle", simple.exteriorBlurToggle);
-            simple.exteriorBlurStrength     = static_cast<float>(ini.GetDoubleValue(L"Simple", L"ExteriorBlurStrength", simple.exteriorBlurStrength));
-            simple.exteriorBlurRange        = static_cast<float>(ini.GetDoubleValue(L"Simple", L"ExteriorBlurRange", simple.exteriorBlurRange));
-
             Logger::info("Settings: INI loaded successfully.");
 			return true;
         }
@@ -76,18 +66,9 @@ namespace Settings {
             CSimpleIniW ini;
             ini.SetUnicode();
 
-            ini.SetLongValue(L"General", L"BlurType", general.BlurType, L"; Blur Type (0 = None, 1 = Simple, 2 = Advanced)");
+            ini.SetLongValue(L"General", L"BlurType", general.BlurType, L"; Blur Type (0 = None, 1 = Advanced)");
 			ini.SetBoolValue(L"General", L"ExtraChecks", general.ExtraChecks, L"; Enable Extra Safety Checks");
 			ini.SetBoolValue(L"General", L"VerboseLogging", general.VerboseLogging, L"; Enable Verbose Logging");
-
-            ini.SetBoolValue(L"Simple", L"BlurSmoothing", simple.blurSmoothing);
-            ini.SetBoolValue(L"Simple", L"InteriorBlurToggle", simple.interiorBlurToggle);
-            ini.SetDoubleValue(L"Simple", L"InteriorBlurStrength", simple.interiorBlurStrength);
-            ini.SetDoubleValue(L"Simple", L"InteriorBlurRange", simple.interiorBlurRange);
-
-            ini.SetBoolValue(L"Simple", L"ExteriorBlurToggle", simple.exteriorBlurToggle);
-            ini.SetDoubleValue(L"Simple", L"ExteriorBlurStrength", simple.exteriorBlurStrength);
-            ini.SetDoubleValue(L"Simple", L"ExteriorBlurRange", simple.exteriorBlurRange);
 
             ini.SaveFile(settingsPath);
 
@@ -97,7 +78,6 @@ namespace Settings {
 
         void Reset() {
             general = GeneralSettings{};
-            simple  = SimpleSettings{};
             Save();
             Logger::info("Settings: INI reset to defaults.");
         }

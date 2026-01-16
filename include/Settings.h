@@ -11,33 +11,19 @@ namespace Settings {
     void SaveAll();      // Saves INI and JSON
     void ResetAll();     // Resets to defaults and saves
 
+    inline std::string weatherListPath = "Data/SKSE/Plugins/DBWeatherList.json";
+
     // ------------------------------
     // General (INI)
     // ------------------------------
     struct GeneralSettings {
-        int  BlurType                  = 2;  // 0=None, 1=Advanced, 2=Simple
-		bool ExtraChecks               = true;
-		bool VerboseLogging            = false;
-    };
-
-    // ------------------------------
-    // Simple  (INI)
-    // ------------------------------
-    struct SimpleSettings {
-        bool  blurSmoothing            = true;
-
-        bool  interiorBlurToggle       = false;
-        float interiorBlurStrength     = 0.5f;
-		float interiorBlurRange        = 100.0f;
-
-        bool  exteriorBlurToggle       = true;
-        float exteriorBlurStrength     = 0.5f;
-		float exteriorBlurRange        = 100.0f;
+        int  BlurType       = 1;  // 0=None, 1=Advanced
+		bool ExtraChecks    = true;
+		bool VerboseLogging = false;
     };
 
     // Global instances
     inline GeneralSettings general;
-    inline SimpleSettings  simple;
 
     // ------------------------------
     // JSON

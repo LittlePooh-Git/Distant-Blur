@@ -13,117 +13,95 @@ namespace MCP {
 		}
 		SKSEMenuFramework::SetSection(modName);
 		SKSEMenuFramework::AddSectionItem("General Settings", General::Render);
-		SKSEMenuFramework::AddSectionItem("Simple Mode", Simple::Render);
-		SKSEMenuFramework::AddSectionItem("Advanced Mode", Advanced::Render); // Helper function looks mad tempting here
+		SKSEMenuFramework::AddSectionItem("Advanced Mode", Advanced::Render);
 	}
 	
-
 	namespace General {
 
-		enum BlurModes { None, Simple, Advanced, BlurMode_COUNT };
+		enum BlurModes { None, Advanced, BlurMode_COUNT };
 
 		inline static int  defaultBlurMode                      = Advanced;
-		inline const char* blurModeNames[BlurMode_COUNT]        = { "None", "Simple", "Advanced" };
+		inline const char* blurModeNames[BlurMode_COUNT]        = { "None", "Advanced" };
 		inline const char* blurModeDescriptions[BlurMode_COUNT] = {
 			"No blur effects will be applied.\n\nEfficient, but distant objects may appear sharp and distinct.",
-			"The simple implementation.\n\nAllows tweaking of both interior and exterior weathers. Works with all weather mods out of the box.", // Uses the depth buffer and camera distance to calculate blur automatically. (What I want to add)
 			"The original implementation.\n\nUses weather IDs to determine blur strength. Good for specific weather setups, but requires manual configuration for new weather mods."
 		};
 
 		inline const std::string blurModeIcons[BlurMode_COUNT] = {
 			FontAwesome::UnicodeToUtf8(0xf05e), // Disabled
-			FontAwesome::UnicodeToUtf8(0xf70e), // Simple
 			FontAwesome::UnicodeToUtf8(0xf013)  // Advanced
-		}; // I'm probably going to consolidate these icons with the ones in Advanced later.
+		};
 
 		void __stdcall Render() {
 			auto& general = Settings::general;
 
 			const char* selectedBlurMode = (defaultBlurMode >= 0 && defaultBlurMode < BlurMode_COUNT) ? blurModeNames[defaultBlurMode] : "Unknown";
-			ImGui::SetNextItemWidth(-1.0f);
-			if (ImGui::SliderInt("Blur Mode", &defaultBlurMode, 0, BlurMode_COUNT - 1, selectedBlurMode)) {
+			ImGuiMCP::SetNextItemWidth(-1.0f);
+			if (ImGuiMCP::SliderInt("Blur Mode", &defaultBlurMode, 0, BlurMode_COUNT - 1, selectedBlurMode)) {
 				general.BlurType = defaultBlurMode;
 			}
 
-			ImGui::Spacing();
+			ImGuiMCP::Spacing();
 
-			if (ImGui::BeginChild("BlurModeInfoBox", ImVec2(0, 175.0f), true, ImGuiWindowFlags_NoScrollbar)) {
+			if (ImGuiMCP::BeginChild("BlurModeInfoBox", ImVec2(0, 175.0f), true, ImGuiWindowFlags_NoScrollbar)) {
 
-				if (ImGui::BeginTable("BlurModeTable", 3, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_SizingStretchProp)) {
+				if (ImGuiMCP::BeginTable("BlurModeTable", 3, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_SizingStretchProp)) {
 
-					ImGui::TableSetupColumn("Icon", columnFlags, 75.0f);
-					ImGui::TableSetupColumn("Title", columnFlags, 100.0f);
-					ImGui::TableSetupColumn("Desc", lastColumnFlags); // Making a helper function for this is tempting
+					ImGuiMCP::TableSetupColumn("Icon", columnFlags, 75.0f);
+					ImGuiMCP::TableSetupColumn("Title", columnFlags, 100.0f);
+					ImGuiMCP::TableSetupColumn("Desc", lastColumnFlags); // Making a helper function for this is tempting
 
-					ImGui::TableNextRow();
+					ImGuiMCP::TableNextRow();
 
 					// -- Column 1: Icon --
-					ImGui::TableNextColumn();
+					ImGuiMCP::TableNextColumn();
 					float cellHeight = 100.0f;
-					float cursorY    = ImGui::GetCursorPosY();
-					ImGui::SetCursorPosY(cursorY + (cellHeight * 0.45f));
+					float cursorY    = ImGuiMCP::GetCursorPosY();
+					ImGuiMCP::SetCursorPosY(cursorY + (cellHeight * 0.45f));
 
 					FontAwesome::PushSolid();
-					ImGui::SetWindowFontScale(1.8f);
+					ImGuiMCP::SetWindowFontScale(1.8f);
 					Utils::CenteredImGuiText(blurModeIcons[defaultBlurMode].c_str());
-					ImGui::SetWindowFontScale(1.0f);
+					ImGuiMCP::SetWindowFontScale(1.0f);
 					FontAwesome::Pop();
 
 					// -- Column 2: Title --
-					ImGui::TableNextColumn();
-					ImGui::SetCursorPosY(cursorY + (cellHeight * 0.5f));
+					ImGuiMCP::TableNextColumn();
+					ImGuiMCP::SetCursorPosY(cursorY + (cellHeight * 0.5f));
 
-					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.4f, 0.8f, 1.0f, 1.0f));
+					ImGuiMCP::PushStyleColor(ImGuiCol_Text, ImVec4(0.4f, 0.8f, 1.0f, 1.0f));
 					Utils::CenteredImGuiText(blurModeNames[defaultBlurMode]);
-					ImGui::PopStyleColor();
+					ImGuiMCP::PopStyleColor();
 
 					// -- Column 3: Description --
-					ImGui::TableNextColumn();
-					ImGui::SetWindowFontScale(0.8f);
-					ImGui::TextDisabled("Mode Description:");
-					ImGui::SetWindowFontScale(0.9f);
-					ImGui::Separator();
-					ImGui::PushTextWrapPos(0.0f);
-					ImGui::Text("%s", blurModeDescriptions[defaultBlurMode]);
-					ImGui::PopTextWrapPos();
-					ImGui::SetWindowFontScale(1.0f);
-					ImGui::EndTable();
+					ImGuiMCP::TableNextColumn();
+					ImGuiMCP::SetWindowFontScale(0.8f);
+					ImGuiMCP::TextDisabled("Mode Description:");
+					ImGuiMCP::SetWindowFontScale(0.9f);
+					ImGuiMCP::Separator();
+					ImGuiMCP::PushTextWrapPos(0.0f);
+					ImGuiMCP::Text("%s", blurModeDescriptions[defaultBlurMode]);
+					ImGuiMCP::PopTextWrapPos();
+					ImGuiMCP::SetWindowFontScale(1.0f);
+					ImGuiMCP::EndTable();
 				}
-				ImGui::EndChild();
+				ImGuiMCP::EndChild();
 			}
 
-			ImGui::Spacing();
+			ImGuiMCP::Spacing();
 
-			if (ImGui::CollapsingHeader("Maintenance Settings##header")) {
-				ImGui::Checkbox("Extra Validity Checks", &general.ExtraChecks);
-				if (ImGui::IsItemHovered(tooltipFlags)) {
-					ImGui::SetTooltip("Perform extra checks on Weather Forms on game startup, this increases stability, but may cause a slight hitch on game load. (Default: Enabled)");
+			if (ImGuiMCP::CollapsingHeader("Maintenance Settings##header")) {
+				ImGuiMCP::Checkbox("Extra Validity Checks", &general.ExtraChecks);
+				if (ImGuiMCP::IsItemHovered(tooltipFlags)) {
+					ImGuiMCP::SetTooltip("Perform extra checks on Weather Forms on game startup, this increases stability, but may cause a slight hitch on game load. (Default: Enabled)");
 				}
 
-				ImGui::Checkbox("Verbose Logging", &general.VerboseLogging);
-				if (ImGui::IsItemHovered(tooltipFlags)) {
-					ImGui::SetTooltip("Enable Extra Logging. (Default: Disabled)");
+				ImGuiMCP::Checkbox("Verbose Logging", &general.VerboseLogging);
+				if (ImGuiMCP::IsItemHovered(tooltipFlags)) {
+					ImGuiMCP::SetTooltip("Enable Extra Logging. (Default: Disabled)");
 				}
 			}
 
-		}
-	}
-
-	namespace Simple {
-		void __stdcall Render() {
-			auto& simple = Settings::simple;
-
-			ImGui::Checkbox("Blur Smoothing Toggle", &simple.blurSmoothing);
-
-			RenderBlurSection("Interior Settings##header",
-				simple.interiorBlurToggle,
-				simple.interiorBlurStrength,
-				simple.interiorBlurRange);
-
-			RenderBlurSection("Exterior Settings##header",
-				simple.exteriorBlurToggle,
-				simple.exteriorBlurStrength,
-				simple.exteriorBlurRange);
 		}
 	}
 
@@ -157,8 +135,8 @@ namespace MCP {
 		};
 
 		void DrawTableRow(int rowIndex, WeatherSettingRow& currentRow, const std::vector<std::string>& weatherNames) {
-			ImGui::PushID(rowIndex);
-			ImGui::TableNextRow();
+			ImGuiMCP::PushID(rowIndex);
+			ImGuiMCP::TableNextRow();
 
 			Logger::trace("Drawing row {}: Toggle = {}, Weather = '{}', Strength = {}, Range = {}, Static = {}",
 				rowIndex,
@@ -170,19 +148,19 @@ namespace MCP {
 			);
 
 			// Column 0: Drag Handle
-			ImGui::TableNextColumn();
+			ImGuiMCP::TableNextColumn();
 			FontAwesome::PushSolid();
-			ImGui::Button(IconLibrary::DragHandle.c_str(), ImVec2(-FLT_MIN, 0.0f));
+			ImGuiMCP::Button(IconLibrary::DragHandle.c_str(), ImVec2(-FLT_MIN, 0.0f));
 			FontAwesome::Pop();
 
-			if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
-				ImGui::SetDragDropPayload("MCP_WEATHER_ROW", &rowIndex, sizeof(int));
-				ImGui::Text("Moving Row %d", rowIndex);
-				ImGui::EndDragDropSource();
+			if (ImGuiMCP::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
+				ImGuiMCP::SetDragDropPayload("MCP_WEATHER_ROW", &rowIndex, sizeof(int));
+				ImGuiMCP::Text("Moving Row %d", rowIndex);
+				ImGuiMCP::EndDragDropSource();
 			}
 
-			if (ImGui::BeginDragDropTarget()) {
-				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MCP_WEATHER_ROW")) {
+			if (ImGuiMCP::BeginDragDropTarget()) {
+				if (const ImGuiPayload* payload = ImGuiMCP::AcceptDragDropPayload("MCP_WEATHER_ROW")) {
 					int sourceIndex = *(const int*)payload->Data;
 					if (sourceIndex != rowIndex) {
 						auto& data = g_advancedWeatherData.settings;
@@ -190,23 +168,23 @@ namespace MCP {
 						Hooks::BlurManager::GetSingleton().NotifySettingsChanged();
 					}
 				}
-				ImGui::EndDragDropTarget();
+				ImGuiMCP::EndDragDropTarget();
 			}
 			Logger::trace("Rendered Drag Handle for row {}", rowIndex);
 
 			// Column 1: Toggle
-			ImGui::TableNextColumn();
-			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (ImGui::GetColumnWidth() - ImGui::GetFrameHeight()) * 0.5f);
-			if (ImGui::Checkbox("##Toggle", &currentRow.rowToggle)) {
+			ImGuiMCP::TableNextColumn();
+			ImGuiMCP::SetCursorPosX(ImGuiMCP::GetCursorPosX() + (ImGuiMCP::GetColumnWidth() - ImGuiMCP::GetFrameHeight()) * 0.5f);
+			if (ImGuiMCP::Checkbox("##Toggle", &currentRow.rowToggle)) {
 				Hooks::BlurManager::GetSingleton().NotifySettingsChanged();
 			}
 			Logger::trace("Rendered Toggle checkbox for row {}", rowIndex);
 
 			// Column 2: Weather ComboBox
-			ImGui::TableNextColumn();
-			ImGui::PushItemWidth(-FLT_MIN);
+			ImGuiMCP::TableNextColumn();
+			ImGuiMCP::PushItemWidth(-FLT_MIN);
 			std::string originalWeather = currentRow.rowWeatherType;
-			if (ImGui::BeginCombo("##Weather", originalWeather.c_str())) {
+			if (ImGuiMCP::BeginCombo("##Weather", originalWeather.c_str())) {
 				for (const auto& weatherName : weatherNames) {
 					bool isUsedByOther = false;
 
@@ -214,7 +192,7 @@ namespace MCP {
 					if (weatherName != "None" && weatherName != currentRow.rowWeatherType) {
 						for (const auto& existingRow : g_advancedWeatherData.settings) {
 							if (existingRow.rowWeatherType == weatherName) {
-								isUsedByOther              =  true;
+								isUsedByOther = true;
 								break;
 							}
 						}
@@ -223,12 +201,12 @@ namespace MCP {
 					// Skip this iteration if weather is taken
 					if (isUsedByOther) continue;
 					bool isSelected = (currentRow.rowWeatherType == weatherName);
-					if (ImGui::Selectable(weatherName.c_str(), isSelected)) {
+					if (ImGuiMCP::Selectable(weatherName.c_str(), isSelected)) {
 						currentRow.rowWeatherType = weatherName;
 					}
-					if (isSelected) ImGui::SetItemDefaultFocus();
+					if (isSelected) ImGuiMCP::SetItemDefaultFocus();
 				}
-				ImGui::EndCombo();
+				ImGuiMCP::EndCombo();
 				if (originalWeather != currentRow.rowWeatherType) {
 					Logger::trace("Weather changed for row {}: '{}' -> '{}'", rowIndex, originalWeather, currentRow.rowWeatherType);
 					Hooks::BlurManager::GetSingleton().NotifySettingsChanged();
@@ -237,10 +215,10 @@ namespace MCP {
 			Logger::trace("Rendered Weather ComboBox for row {}", rowIndex);
 
 			// Column 3: Get Current Weather
-			ImGui::TableNextColumn();
-			ImGui::PushItemWidth(-FLT_MIN);
+			ImGuiMCP::TableNextColumn();
+			ImGuiMCP::PushItemWidth(-FLT_MIN);
 			FontAwesome::PushSolid();
-			if (ImGui::Button(IconLibrary::GetWeather.c_str(), ImVec2(-FLT_MIN, 0.0f))) {
+			if (ImGuiMCP::Button(IconLibrary::GetWeather.c_str(), ImVec2(-FLT_MIN, 0.0f))) {
 				Logger::trace("Weather selection button clicked for row {}", rowIndex);
 				currentRow.rowWeatherType = Utils::GetCurrentWeather();
 			}
@@ -252,34 +230,34 @@ namespace MCP {
 			Logger::trace("Rendered Get Current Weather button for row {}", rowIndex);
 
 			// Column 4: Strength
-			ImGui::TableNextColumn();
-			ImGui::PushItemWidth(-FLT_MIN);
-			if (ImGui::InputFloat("##Strength", &currentRow.rowBlurStrength, 0.01f, 0.1f, "%.2f", inputFlags)) {
+			ImGuiMCP::TableNextColumn();
+			ImGuiMCP::PushItemWidth(-FLT_MIN);
+			if (ImGuiMCP::InputFloat("##Strength", &currentRow.rowBlurStrength, 0.01f, 0.1f, "%.2f", inputFlags)) {
 				Hooks::BlurManager::GetSingleton().NotifySettingsChanged();
 			}
 			Logger::trace("Rendered Strength input for row {}", rowIndex);
 
 			// Column 5: Range
-			ImGui::TableNextColumn();
-			ImGui::PushItemWidth(-FLT_MIN);
-			if (ImGui::InputFloat("##Range", &currentRow.rowBlurRange, 10.0f, 100.0f, "%.2f", inputFlags)) {
+			ImGuiMCP::TableNextColumn();
+			ImGuiMCP::PushItemWidth(-FLT_MIN);
+			if (ImGuiMCP::InputFloat("##Range", &currentRow.rowBlurRange, 10.0f, 100.0f, "%.2f", inputFlags)) {
 				Hooks::BlurManager::GetSingleton().NotifySettingsChanged();
 			}
 			Logger::trace("Rendered Range input for row {}", rowIndex);
 
 			// Column 6: Static
-			ImGui::TableNextColumn();
-			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (ImGui::GetColumnWidth() - ImGui::GetFrameHeight()) * 0.5f);
-			if (ImGui::Checkbox("##Static", &currentRow.rowStaticToggle)) {
+			ImGuiMCP::TableNextColumn();
+			ImGuiMCP::SetCursorPosX(ImGuiMCP::GetCursorPosX() + (ImGuiMCP::GetColumnWidth() - ImGuiMCP::GetFrameHeight()) * 0.5f);
+			if (ImGuiMCP::Checkbox("##Static", &currentRow.rowStaticToggle)) {
 				Hooks::BlurManager::GetSingleton().NotifySettingsChanged();
 			}
 			Logger::trace("Rendered Static checkbox for row {}", rowIndex);
 
 			// Column 7: Reset
-			ImGui::TableNextColumn();
+			ImGuiMCP::TableNextColumn();
 			FontAwesome::PushSolid();
 			auto originalRow = currentRow;
-			if (ImGui::Button(IconLibrary::ResetRow.c_str(), ImVec2(-FLT_MIN, 0.0f))) {
+			if (ImGuiMCP::Button(IconLibrary::ResetRow.c_str(), ImVec2(-FLT_MIN, 0.0f))) {
 				currentRow = WeatherSettingRow{};
 			}
 			if (originalRow != currentRow) {
@@ -289,16 +267,16 @@ namespace MCP {
 			Logger::trace("Rendered Reset button for row {}", rowIndex);
 
 			// Column 8: Remove
-			ImGui::TableNextColumn();
+			ImGuiMCP::TableNextColumn();
 			FontAwesome::PushSolid();
-			if (ImGui::Button(IconLibrary::RemoveRow.c_str(), ImVec2(-FLT_MIN, 0.0f))) {
+			if (ImGuiMCP::Button(IconLibrary::RemoveRow.c_str(), ImVec2(-FLT_MIN, 0.0f))) {
 				g_advancedWeatherData.rowToRemove = rowIndex;
 				Hooks::BlurManager::GetSingleton().NotifySettingsChanged();
 			}
 			FontAwesome::Pop();
 			Logger::trace("Rendered Remove button for row {}", rowIndex);
 
-			ImGui::PopID();
+			ImGuiMCP::PopID();
 			Logger::trace("Finished drawing row {}", rowIndex);
 		}
 
@@ -310,21 +288,21 @@ namespace MCP {
 			const int   columnCount  = std::size(COLUMN_SETUPS);
 			Logger::trace("Weather Table Column Count: {}", columnCount);
 
-			if (ImGui::BeginTable("WeatherTable", columnCount, tableFlags)) {
+			if (ImGuiMCP::BeginTable("WeatherTable", columnCount, tableFlags)) {
 				for (const auto& setup : COLUMN_SETUPS) {
 					if (setup.width > 0.0f) {
-						ImGui::TableSetupColumn(setup.title, columnFlags, setup.width);
+						ImGuiMCP::TableSetupColumn(setup.title, columnFlags, setup.width);
 						Logger::trace("Setting up column '{}' with stretchy width {}", setup.title, setup.width);
 					} else {
-						ImGui::TableSetupColumn(setup.title, lastColumnFlags);
+						ImGuiMCP::TableSetupColumn(setup.title, lastColumnFlags);
 						Logger::trace("Setting up last column '{}' with adapting width", setup.title);
 					}
 				}
 
-				ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
+				ImGuiMCP::TableNextRow(ImGuiTableRowFlags_Headers);
 				for (int headerColumn = 0; headerColumn < columnCount; headerColumn++) {
 					Logger::trace("Drawing header for column index {}", headerColumn);
-					ImGui::TableSetColumnIndex(headerColumn);
+					ImGuiMCP::TableSetColumnIndex(headerColumn);
 					Utils::CenteredImGuiText(COLUMN_SETUPS[headerColumn].title);
 					Logger::trace("Header drawn: {}", COLUMN_SETUPS[headerColumn].title);
 				}
@@ -333,15 +311,15 @@ namespace MCP {
 					DrawTableRow(row, g_advancedWeatherData.settings[row], weatherNames);
 					Logger::trace("Drawn row {}", row);
 				}
-				ImGui::EndTable();
+				ImGuiMCP::EndTable();
 
 				g_advancedWeatherData.RemoveRow();
 				Logger::trace("Processed row removals if any");
-
+				
 				// Add Row button
 				FontAwesome::PushRegular();
-				if (ImGui::Button(IconLibrary::AddRow.c_str(), ImVec2(-FLT_MIN, 0.0f))) {
-					Logger::trace("Add New Weather button clicked");
+				if (ImGuiMCP::Button(IconLibrary::AddRow.c_str(), ImVec2(-FLT_MIN, 0.0f))) {
+					Logger::trace("Add row button clicked");
 					g_advancedWeatherData.AddRow();
 					Hooks::BlurManager::GetSingleton().NotifySettingsChanged();
 				}

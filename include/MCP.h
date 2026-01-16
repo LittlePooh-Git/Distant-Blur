@@ -1,8 +1,12 @@
 #pragma once
 
-namespace MCP {
-	void Register();
+#include "PCH.h"
 
+namespace MCP {
+	using namespace ImGuiMCP;
+
+	void Register();
+	
 	static ImGuiTableFlags       tableFlags      = ImGuiTableFlags_Resizable          | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_BordersInner | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersH | ImGuiTableFlags_SizingFixedFit;
 	static ImGuiTableColumnFlags columnFlags     = ImGuiTableColumnFlags_WidthFixed   | ImGuiTableColumnFlags_NoReorder;
 	static ImGuiTableColumnFlags lastColumnFlags = ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoReorder;
@@ -10,17 +14,6 @@ namespace MCP {
 	static ImGuiHoveredFlags     tooltipFlags    = ImGuiHoveredFlags_DelayNormal      | ImGuiHoveredFlags_NoSharedDelay;
 
 	namespace General {
-		void Render();
-	}
-
-	static void RenderBlurSection(const char* header, bool& toggle, float& strength, float& range) {
-		if (!ImGui::CollapsingHeader(header)) return;
-		ImGui::Checkbox("Blur Toggle", &toggle);
-		ImGui::SliderFloat("Blur Strength", &strength, 0.0f, 1.0f, "%.2f");
-		ImGui::SliderFloat("Blur Range", &range, 0.0f, 100.0f, "%.2f");
-	}
-
-	namespace Simple {
 		void Render();
 	}
 

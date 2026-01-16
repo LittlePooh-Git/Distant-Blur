@@ -80,14 +80,14 @@ namespace Utils {
 	std::string GetPreviousWeather();
 
 	inline void CenteredImGuiText(const char* text) {
-		ImVec2 a_vec;
-		ImGui::CalcTextSize(&a_vec, text, nullptr, false, 0);
+		ImGuiMCP::ImVec2 a_vec;
+		ImGuiMCP::CalcTextSize(&a_vec, text, nullptr, false, 0);
 
 		// Calculate the horizontal position to center the text
-		float textX = ImGui::GetCursorPosX() + (ImGui::GetColumnWidth() - a_vec.x) * 0.5f;
+		float textX = ImGuiMCP::GetCursorPosX() + (ImGuiMCP::GetColumnWidth() - a_vec.x) * 0.5f;
 
-		ImGui::SetCursorPosX(textX);
-		ImGui::Text("%s", text);
+		ImGuiMCP::SetCursorPosX(textX);
+		ImGuiMCP::Text("%s", text);
 		return;
 	}
 }

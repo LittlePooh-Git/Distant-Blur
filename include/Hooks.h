@@ -39,7 +39,7 @@ namespace Hooks {
         
             // Settings Data
             bool  _settingsDirty          = true;
-            bool  _lastCellWasInterior    = false; 
+            bool  _lastCellWasInterior    = false;
         
             // Row Data
             float _currentTargetStrength  = 0.0f;

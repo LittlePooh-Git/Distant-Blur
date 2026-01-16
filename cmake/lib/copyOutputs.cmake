@@ -26,5 +26,4 @@ function(copyOutputs TARGET_FOLDER)
             VERBATIM
         )
     endif()
-
 endfunction()
